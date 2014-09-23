@@ -11,6 +11,7 @@ namespace HotelBookingApplication
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        /// Comment added
         [STAThread]
         static void Main()
         {
