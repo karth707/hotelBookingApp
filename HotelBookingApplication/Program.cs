@@ -8,10 +8,6 @@ namespace HotelBookingApplication
 {
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        /// Comment added
         [STAThread]
         static void Main()
         {
@@ -19,5 +15,7 @@ namespace HotelBookingApplication
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
+
+        
     }
 }
