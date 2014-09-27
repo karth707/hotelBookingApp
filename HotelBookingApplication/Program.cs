@@ -5,26 +5,31 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 
-public delegate void priceCutEvent(Int32 p);
+public delegate void priceCutEvent(Int32 price);
+public delegate void priceChangeEvent(Int32 price);
+
 namespace HotelBookingApplication{
 public class Program{
 
-    private static Int32 NUM_HOTELS = 1;
-    private static Int32 NUM_AGENTS = 3;
+    private static Int32 NUM_HOTELS = 3;
+    private static Int32 NUM_AGENTS = 2;
 
     static void Main(string[] args){
 
-        HotelSupplier supplier = new HotelSupplier();
+        HotelSupplier[] suppliers = new HotelSupplier[NUM_HOTELS];
         Thread[] hotelSupplier = new Thread[NUM_HOTELS];
         for (Int32 i = 0; i < NUM_HOTELS; i++)
         {
-            hotelSupplier[i] = new Thread(new ThreadStart(supplier.HotelFunc));
+            suppliers[i] = new HotelSupplier();
+            hotelSupplier[i] = new Thread(new ThreadStart(suppliers[i].HotelFunc));
             hotelSupplier[i].Name = "HSupplier:" + (i + 1).ToString();
             hotelSupplier[i].Start();
         }
         
         TravelAgency agency = new TravelAgency();
         HotelSupplier.priceCut += new priceCutEvent(agency.HotelRoomOnSale);
+        HotelSupplier.priceChange += new priceChangeEvent(agency.HotelRoomPriceChange);
+
         Thread[] travelAgency = new Thread[NUM_AGENTS];
         for (Int32 i = 0; i < NUM_AGENTS; i++)
         {
