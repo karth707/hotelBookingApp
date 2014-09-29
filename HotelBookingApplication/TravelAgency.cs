@@ -12,6 +12,8 @@ namespace HotelBookingApplication
     {
         ConcurrentDictionary<String, PriceObject> hotelPricesMap = new ConcurrentDictionary<String, PriceObject>();
         ConcurrentDictionary<String, byte> hotelsWithRoomsOnSale = new ConcurrentDictionary<String, byte>();
+        Random rand = new Random();
+
 
         public void AgencyFunc()
         {
@@ -37,8 +39,17 @@ namespace HotelBookingApplication
         public void bookHotel(String hotel, String agent, Int32 price)
         {
             //attempt booking
-            Console.WriteLine("{0} will attept to book {1} having price {2}"
+            Console.WriteLine("{0} will attempt to book {1} having price {2}"
                    , agent, hotel, price);
+            OrderObject oo = new OrderObject();
+            oo.setSenderId(agent);
+            oo.setCardNo(rand.Next(2000,3000));
+            oo.setNumberRooms(rand.Next(10, 50));
+            oo.setReceiverId(hotel);
+            oo.setPrice(price);
+            String encoded = Encoder.Encrypt(oo, "ABCDEFGHIJKLMNOP");
+            
+            
         }
 
         public void HotelRoomOnSale(Int32 price)
