@@ -11,7 +11,7 @@ public delegate void priceChangeEvent(Int32 price);
 namespace HotelBookingApplication{
 public class Program{
 
-    private static Int32 NUM_HOTELS = 3;
+    private static Int32 NUM_HOTELS = 1;
     private static Int32 NUM_AGENTS = 2;
 
     static void Main(string[] args){
