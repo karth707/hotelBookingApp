@@ -4,24 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace HotelBookingApplication
 {
     class TravelAgency
     {
-        Int32 price = 0;       
-        String HotelName= null;
-        ReaderWriterLock rw = new ReaderWriterLock();
+        ConcurrentDictionary<String, PriceObject> hotelPricesMap = new ConcurrentDictionary<String, PriceObject>();
+        ConcurrentDictionary<String, byte> hotelsWithRoomsOnSale = new ConcurrentDictionary<String, byte>();
 
         public void AgencyFunc()
-        {            
+        {
             for (Int32 i = 0; i < 50; i++)
-            {                                
-                Thread.Sleep(200);                                
-                if (getPrice() != 0 && getHotelName() != null)
+            {
+                Thread.Sleep(500);
+                if (hotelsWithRoomsOnSale.Count != 0)
                 {
-                    bookHotel(getHotelName(), Thread.CurrentThread.Name, getPrice());
-                }                                                        
+                    List<String> saleHotels = hotelsWithRoomsOnSale.Keys.Cast<String>().ToList();
+                    foreach (String hotelName in saleHotels)
+                    {
+                        Int32 currentPrice = hotelPricesMap[hotelName].getNewPrice();
+                        Int32 oldPrice = hotelPricesMap[hotelName].getOldPrice();
+                        if (currentPrice < oldPrice)
+                        {
+                            bookHotel(hotelName, Thread.CurrentThread.Name, currentPrice);
+                        }
+                    }
+                }
             }
         }
 
@@ -29,41 +38,39 @@ namespace HotelBookingApplication
         {
             //attempt booking
             Console.WriteLine("{0} will attept to book {1} having price {2}"
-                   , agent, hotel, price);   
+                   , agent, hotel, price);
         }
 
         public void HotelRoomOnSale(Int32 price)
-        {            
-                    Console.WriteLine("{0} rooms are on sale: as low as ${1} each", Thread.CurrentThread.Name, price);
-                    setPrice(price);
-                    setHotelName(Thread.CurrentThread.Name);                              
+        {
+            Console.WriteLine("{0} rooms are on sale: as low as ${1} each", Thread.CurrentThread.Name, price);
+            InsertIntoMap(Thread.CurrentThread.Name, price);
+            hotelsWithRoomsOnSale.TryAdd(Thread.CurrentThread.Name, 0);
+
         }
 
         public void HotelRoomPriceChange(Int32 price)
-        {           
-                    setPrice(0);
-                    setHotelName(null);
+        {
+            InsertIntoMap(Thread.CurrentThread.Name, price);
+            if (hotelsWithRoomsOnSale.Keys.Contains(Thread.CurrentThread.Name))
+            {
+                Byte dummy;
+                hotelsWithRoomsOnSale.TryRemove(Thread.CurrentThread.Name, out dummy);
+            }
         }
 
-        private void setPrice(Int32 price)
+        public void InsertIntoMap(String hotelName, Int32 newPrice)
         {
-            this.price = price;
-        }
-
-        private void setHotelName(String HotelName)
-        {
-            this.HotelName = HotelName;
-            Console.WriteLine("hotel set to:{0}",this.HotelName);
-        }
-
-        private Int32 getPrice()
-        {
-            return this.price;
-        }
-
-        private String getHotelName()
-        {
-            return this.HotelName;
+            if (!hotelPricesMap.Keys.Contains(hotelName))
+            {
+                PriceObject priceObject = new PriceObject();
+                priceObject.UpdatePrices(newPrice);
+                hotelPricesMap.TryAdd(hotelName, priceObject);
+            }
+            else
+            {
+                hotelPricesMap[hotelName].UpdatePrices(newPrice);
+            }
         }
     }
 }
