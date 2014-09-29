@@ -49,6 +49,7 @@
     <Compile Include="HotelSupplier.cs" />
     <Compile Include="MultiCellBuffer.cs" />
     <Compile Include="OrderObject.cs" />
+    <Compile Include="PriceObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TravelAgency.cs" />
