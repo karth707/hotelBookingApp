@@ -14,22 +14,23 @@ namespace HotelBookingApplication
         ConcurrentDictionary<String, byte> hotelsWithRoomsOnSale = new ConcurrentDictionary<String, byte>();
 
         public void AgencyFunc()
-        {            
+        {
             for (Int32 i = 0; i < 50; i++)
-            {                                
+            {
                 Thread.Sleep(500);
-                if (hotelsWithRoomsOnSale.Count!=0)
+                if (hotelsWithRoomsOnSale.Count != 0)
                 {
                     List<String> saleHotels = hotelsWithRoomsOnSale.Keys.Cast<String>().ToList();
-                    foreach(String hotelName in saleHotels){
+                    foreach (String hotelName in saleHotels)
+                    {
                         Int32 currentPrice = hotelPricesMap[hotelName].getNewPrice();
                         Int32 oldPrice = hotelPricesMap[hotelName].getOldPrice();
                         if (currentPrice < oldPrice)
                         {
                             bookHotel(hotelName, Thread.CurrentThread.Name, currentPrice);
                         }
-                    }                    
-                }                                                        
+                    }
+                }
             }
         }
 
@@ -37,15 +38,15 @@ namespace HotelBookingApplication
         {
             //attempt booking
             Console.WriteLine("{0} will attept to book {1} having price {2}"
-                   , agent, hotel, price);   
+                   , agent, hotel, price);
         }
 
         public void HotelRoomOnSale(Int32 price)
-        {            
+        {
             Console.WriteLine("{0} rooms are on sale: as low as ${1} each", Thread.CurrentThread.Name, price);
             InsertIntoMap(Thread.CurrentThread.Name, price);
-            hotelsWithRoomsOnSale.TryAdd(Thread.CurrentThread.Name,0);             
-                                                 
+            hotelsWithRoomsOnSale.TryAdd(Thread.CurrentThread.Name, 0);
+
         }
 
         public void HotelRoomPriceChange(Int32 price)
@@ -70,6 +71,6 @@ namespace HotelBookingApplication
             {
                 hotelPricesMap[hotelName].UpdatePrices(newPrice);
             }
-        } 
+        }
     }
 }
