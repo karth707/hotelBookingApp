@@ -1,5 +1,5 @@
 hotelBookingApp
 ===============
 
-Application for assignment purposes.
-Application that manages booking of hotels.
+Application for class assignment purposes.
+Application that manages concurrent booking of hotels.
