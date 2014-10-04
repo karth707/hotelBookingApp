@@ -12,6 +12,7 @@ namespace HotelBookingApplication
         private String senderId;
         private int cardNo, numberRooms, price;
         private String receiverId;
+        private DateTime bookingTimeStamp;
 
         public OrderObject()
         {
@@ -61,7 +62,6 @@ namespace HotelBookingApplication
             return receiverId;
         }
 
-
         public void setPrice(int price)
         {
             this.price = price;
@@ -70,6 +70,16 @@ namespace HotelBookingApplication
         public int getPrice()
         {
             return price;
+        }
+
+        public void setBookingTimeStamp(DateTime bookingTimeStamp)
+        {
+            this.bookingTimeStamp = bookingTimeStamp;
+        }
+
+        public DateTime getBookingTimeStamp()
+        {
+            return bookingTimeStamp;
         }
     }
 }

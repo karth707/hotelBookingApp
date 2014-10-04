@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Collections.Concurrent;
 
 namespace HotelBookingApplication
 {
@@ -17,14 +16,12 @@ namespace HotelBookingApplication
         private Int32 roomPrice;
         private Int32 p;                                        //priceCut counter; if p=10, thread terminates                             
         private MultiCellBuffer mCellBuffer;
-        public Int32 locationCharge;
 
         public HotelSupplier(MultiCellBuffer mCellBuffer)
         {
             roomPrice = 10;
             p = 0;
             this.mCellBuffer = mCellBuffer;
-            this.locationCharge = rng.Next(5, 10);
         }
 
         public Int32 getPrice() {                           //returns price
@@ -60,10 +57,10 @@ namespace HotelBookingApplication
                 }
                 else
                 {
-                    Int32 newPrice = rng.Next(500, 1000);
-                    changePrice(newPrice);                   
+                    Int32 newPrice = rng.Next(5, 10);
+                    changePrice(newPrice);
+                    //Console.WriteLine("New price for Hotel:{0} is:{1}", Thread.CurrentThread.Name, newPrice);
                     Thread.Sleep(500);
-                    
                     if (mCellBuffer.getNElement() != 0)
                     {
                         String encodedOrder = mCellBuffer.getOneCell();
@@ -73,33 +70,16 @@ namespace HotelBookingApplication
                             Thread orderThread = new Thread(() => this.orderProcessing(decodedOrder));
                             orderThread.Start();
                         }
-                    }                    
+                    }
+                    //decode orders
+                    //spawn orderProcessing threads for processing order
                 }
             }
         }
 
         public void orderProcessing(OrderObject decodedOrder)
         {
-            if(decodedOrder.getCardNo() < 2000 && decodedOrder.getCardNo() > 3000)
-            {
-                String failedBooking = "Booking failed!! Details: Processed for "+ decodedOrder.getNumberRooms()
-                +" rooms at $"+decodedOrder.getPrice()
-                +" per room for "+ decodedOrder.getSenderId() 
-                +" by "+ decodedOrder.getReceiverId();
-               
-            }            
-            double tax = 0.08;
-            double finalPrice = decodedOrder.getNumberRooms() * decodedOrder.getPrice();
-            finalPrice += finalPrice * tax;
-            finalPrice += this.locationCharge;
-            
-            String confirmedBooking = "Booking confirmed at !! Details: Processed for "+ decodedOrder.getNumberRooms()
-                +" rooms at $"+decodedOrder.getPrice()
-                +" per room for "+ decodedOrder.getSenderId() 
-                +" by "+ decodedOrder.getReceiverId()
-                +" at total cost $"+ finalPrice
-                +" including Location Charge $" + this.locationCharge;
-
+            Console.WriteLine("order Processed for {0} by {1}",decodedOrder.getSenderId(), decodedOrder.getReceiverId());
         }
     }
 }

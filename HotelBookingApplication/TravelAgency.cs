@@ -8,12 +8,18 @@ using System.Collections.Concurrent;
 
 namespace HotelBookingApplication
 {
-    class TravelAgency
-    {
-        ConcurrentDictionary<String, PriceObject> hotelPricesMap = new ConcurrentDictionary<String, PriceObject>();
-        ConcurrentDictionary<String, byte> hotelsWithRoomsOnSale = new ConcurrentDictionary<String, byte>();
-        Random rand = new Random();
 
+    class TravelAgency
+    {        
+        private ConcurrentDictionary<String, PriceObject> hotelPricesMap = new ConcurrentDictionary<String, PriceObject>();
+        private ConcurrentDictionary<String, byte> hotelsWithRoomsOnSale = new ConcurrentDictionary<String, byte>();
+        private MultiCellBuffer mCellBuffer;
+        private Random rand = new Random();
+
+        public TravelAgency(MultiCellBuffer mCellBuffer)
+        {
+            this.mCellBuffer = mCellBuffer;          
+        }
 
         public void AgencyFunc()
         {
@@ -38,18 +44,18 @@ namespace HotelBookingApplication
 
         public void bookHotel(String hotel, String agent, Int32 price)
         {
-            //attempt booking
-            Console.WriteLine("{0} will attempt to book {1} having price {2}"
-                   , agent, hotel, price);
+            //attempt booking          
             OrderObject oo = new OrderObject();
             oo.setSenderId(agent);
             oo.setCardNo(rand.Next(2000,3000));
             oo.setNumberRooms(rand.Next(10, 50));
             oo.setReceiverId(hotel);
             oo.setPrice(price);
-            String encoded = Encoder.Encrypt(oo, "ABCDEFGHIJKLMNOP");
-            
-            
+            oo.setBookingTimeStamp(System.DateTime.Now);
+            String encodedOrder = Encoder.Encrypt(oo, "ABCDEFGHIJKLMNOP");
+            Console.WriteLine("{0} will attempt to book {1} having price {2} at: {3}"
+                  , agent, hotel, price, System.DateTime.Now);
+            mCellBuffer.setOneCell(encodedOrder, oo.getReceiverId());            
         }
 
         public void HotelRoomOnSale(Int32 price)
