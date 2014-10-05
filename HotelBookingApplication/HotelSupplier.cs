@@ -22,11 +22,11 @@ namespace HotelBookingApplication
 
         public HotelSupplier(MultiCellBuffer mCellBuffer, ConfirmationBuffer cBuffer)
         {
-            roomPrice = 10;
+            roomPrice = 1000;                                   //Initialize variables
             p = 0;
             this.mCellBuffer = mCellBuffer;
             this.cBuffer = cBuffer;
-            this.locationCharge = rng.Next(5, 10);
+            this.locationCharge = rng.Next(15, 20);             //Each  hotel Supplier has its own location charge
         }
 
         public Int32 getPrice() {                           //returns price
@@ -54,7 +54,7 @@ namespace HotelBookingApplication
         {                                                   //Changes the price of the room for this hotel                    
             for (Int32 i = 0; i < 100; i++)
             {
-                if (p > 10)
+                if (p > 10)                                 //If 10 price cuts have finished, the threads terminates
                 {
                     if (priceChange != null)
                         priceChange(0);
@@ -62,46 +62,46 @@ namespace HotelBookingApplication
                 }
                 else
                 {
-                    Int32 newPrice = rng.Next(500, 1000);
-                    changePrice(newPrice);                   
+                    Int32 newPrice = rng.Next(500, 1000);       
+                    changePrice(newPrice);                  //Changes price  
                     Thread.Sleep(500);
                     
                     if (mCellBuffer.getNElement() != 0)
                     {
-                        String encodedOrder = mCellBuffer.getOneCell();
+                        String encodedOrder = mCellBuffer.getOneCell();                                     //Checking the multicell buffer for any orders
                         if (encodedOrder != null)
                         {
-                            OrderObject decodedOrder = Decoder.Decrypt(encodedOrder, "ABCDEFGHIJKLMNOP");
-                            Thread orderThread = new Thread(() => this.orderProcessing(decodedOrder));
+                            OrderObject decodedOrder = Decoder.Decrypt(encodedOrder, "ABCDEFGHIJKLMNOP");   //Decrypts the order    
+                            Thread orderThread = new Thread(() => this.orderProcessing(decodedOrder));      //Starts order processing parameterized thread with the argument as the order
                             orderThread.Start();
                         }
                     }                    
                 }
             }
         }
-
-        public void orderProcessing(OrderObject decodedOrder)
+                
+        public void orderProcessing(OrderObject decodedOrder)                                                           //Order Processing thread
         {
             String agent = decodedOrder.getSenderId();
             int n = (int)Char.GetNumericValue(agent[agent.Length - 1]);
-            if(decodedOrder.getCardNo() < 2000 && decodedOrder.getCardNo() > 3000)
+            if(decodedOrder.getCardNo() < 2000 && decodedOrder.getCardNo() > 3000)                                      //Checks card information
             {
-                String failedBooking = "Booking failed!! Details: Processed for "+ decodedOrder.getNumberRooms()
+                String failedBooking = "Booking failed!! Details: Processed for "+ decodedOrder.getNumberRooms()        //booking failed message
                 +" rooms at $"+decodedOrder.getPrice()
                 +" per room for "+ decodedOrder.getSenderId() 
                 +" by "+ decodedOrder.getReceiverId();
 
-                cBuffer.Put(failedBooking, n - 1);
-                return;               
+                cBuffer.Put(failedBooking, n - 1);                                          //Place failed order in the order confirmation buffer
+                return;                 
             }            
-            double tax = 0.08;
-            double finalPrice = decodedOrder.getNumberRooms() * decodedOrder.getPrice();
+            double tax = 0.08;                                                              //tax
+            double finalPrice = decodedOrder.getNumberRooms() * decodedOrder.getPrice();    //final price
             finalPrice += finalPrice * tax;
-            finalPrice += this.locationCharge;
+            finalPrice += this.locationCharge;                                              //adding location charges
 
             TimeSpan timeSpan = System.DateTime.Now - decodedOrder.getBookingTimeStamp();
                         
-            String confirmedBooking = "Booking confirmed at "+System.DateTime.Now
+            String confirmedBooking = "Booking confirmed at "+System.DateTime.Now           //Booking confirmed message
                 +" in "+timeSpan
                 +" seconds!! Details: Processed for "+ decodedOrder.getNumberRooms()
                 +" rooms at $"+decodedOrder.getPrice()
@@ -110,7 +110,7 @@ namespace HotelBookingApplication
                 +" at total cost $"+ finalPrice
                 +" including Location Charge $" + this.locationCharge;
 
-                cBuffer.Put(confirmedBooking, n - 1);
+                cBuffer.Put(confirmedBooking, n - 1);                                       //Place confirmed booking in the confirmation buffer
         }
     }
 }

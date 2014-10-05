@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace HotelBookingApplication
 {
-    class BufferObject
+    class BufferObject                              //the object that is a single cell in the multicell buffer
     {
-        private String hotel;
-        private String encodedOrder;
+        private String hotel;                       //Has the data for the hotel that the booking was for and the encoded order
+        private String encodedOrder;                //We store the hotel details along with the order so that we know which supplier should pick up and process the order
 
         public BufferObject(String encodedOrder, String hotel)
         {

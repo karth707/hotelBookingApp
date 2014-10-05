@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HotelBookingApplication
 {
-    class Decoder
+    class Decoder                                                   //Does the decoding of the order with the key provided
     {
 
         public static OrderObject Decrypt(String input, string key)

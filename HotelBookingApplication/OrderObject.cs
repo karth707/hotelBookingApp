@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace HotelBookingApplication
 {
     [Serializable]
-    class OrderObject
+    class OrderObject                               //Order object having all details of the order ordered by the travel agent
     {
         private String senderId;
         private int cardNo, numberRooms, price;

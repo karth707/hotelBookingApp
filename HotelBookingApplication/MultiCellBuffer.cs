@@ -7,16 +7,16 @@ using System.Threading;
 
 namespace HotelBookingApplication
 {
-    class MultiCellBuffer
+    class MultiCellBuffer                                                   //Multi cell buffer that has the orders placed by the agency for the suppliers to read
     {        
-        const int BUFFER_SIZE = 3;
+        const int BUFFER_SIZE = 3;                                          //buffer of size 3
         int head = 0, tail = 0, nElements = 0;
         BufferObject[] buffer = new BufferObject[BUFFER_SIZE];        
-
-        Semaphore write = new Semaphore(3, 3);
-        Semaphore read = new Semaphore(3, 3);
-
-        public void setOneCell(String encodedOrder, String hotel)
+            
+        Semaphore write = new Semaphore(3, 3);                              //Read and write semaphores
+        Semaphore read = new Semaphore(3, 3);   
+                
+        public void setOneCell(String encodedOrder, String hotel)           //placing an order in the buffer
         {
             write.WaitOne();
             //Console.WriteLine("Thread : " + Thread.CurrentThread.Name + " Entred Write");
@@ -28,8 +28,7 @@ namespace HotelBookingApplication
                 }
                 BufferObject bufferObject = new BufferObject(encodedOrder, hotel);
                 buffer[tail] = bufferObject;                
-                tail = (tail + 1) % BUFFER_SIZE;
-                //Console.WriteLine("Write to the buffer: {0}, {1}, {2}", encodedOrder, DateTime.Now, nElements);
+                tail = (tail + 1) % BUFFER_SIZE;                
                 nElements++;
                 //Console.WriteLine("Thread : " + Thread.CurrentThread.Name + " Leaving Write");
                 write.Release();
@@ -37,7 +36,7 @@ namespace HotelBookingApplication
             }
         }
 
-        public String getOneCell()
+        public String getOneCell()                                      //Retrieving an order from the buffer
         {
             read.WaitOne();
             
@@ -48,13 +47,12 @@ namespace HotelBookingApplication
                 {
                     Monitor.Wait(this, 2000);
                 }
-                if (Thread.CurrentThread.Name.Equals(buffer[head].getHotel()))
-                {
+                if (Thread.CurrentThread.Name.Equals(buffer[head].getHotel()))                          //Since multiple hotel suppliers read from here, 
+                {                                                                                       //we check if the order is for that particular supplier
                     //Console.WriteLine("Thread : " + Thread.CurrentThread.Name + " Entred Read");
                     encodedOrder = buffer[head].getEncodedOrder();
                     head = (head + 1) % BUFFER_SIZE;
-                    nElements--;
-                    //Console.WriteLine("Read from the buffer: {0} , {1}, {2}", encodedOrder, DateTime.Now, nElements);
+                    nElements--;                    
                     //Console.WriteLine("Thread : " + Thread.CurrentThread.Name + " leaving Read");
                 }
                 read.Release();

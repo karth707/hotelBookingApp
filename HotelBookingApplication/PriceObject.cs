@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HotelBookingApplication
 {
-    class PriceObject
+    class PriceObject                               //This object contains current price and old price for a hotel supplier
     {
         Int32 oldPrice;
         Int32 newPrice;

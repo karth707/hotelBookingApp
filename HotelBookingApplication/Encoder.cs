@@ -12,7 +12,7 @@ using System.Xml;
 
 namespace HotelBookingApplication
 {
-    class Encoder
+    class Encoder                                                                       //Does the encoding of the order with the key provided
     {
         public static string Encrypt(OrderObject input, String key)
         {

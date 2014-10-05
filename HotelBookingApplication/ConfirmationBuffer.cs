@@ -7,18 +7,17 @@ using System.Threading.Tasks;
 
 namespace HotelBookingApplication
 {
-    class ConfirmationBuffer
-    {
-        const int BUFFER_SIZE = 5;
+    class ConfirmationBuffer                                //This buffer holds the confirmation for the orders that were processed by the hotel suppliers
+    {                                                       //We place the order confirmation for the ith agency in the ith ocation of this buffer
+        const int BUFFER_SIZE = Program.NUM_AGENTS;
         public String[] buffer = new String[BUFFER_SIZE];
-        int n = 0;
 
-        public void Put(String message, int i)
+        public void Put(String message, int i)              //Place the order confirmation in one of the cells
         {
 
             lock (this)
             {
-                if (buffer[i] != null)
+                while (buffer[i] != null)
                 {
                     try
                     {
@@ -28,18 +27,15 @@ namespace HotelBookingApplication
                 }
                 buffer[i] = message;
                 Monitor.Pulse(this);
-
-
-                //Console.WriteLine("writing thread " + Thread.CurrentThread.Name + " " + message + " " + n);
             }
             }
         
 
-        public String Get(int i)
+        public String Get(int i)                            //Retrieve an order confirmation
         {
             lock (this)
             {
-                if (buffer[i] == null)
+                while (buffer[i] == null)
                 {
                     try
                     {
@@ -48,12 +44,8 @@ namespace HotelBookingApplication
                     catch { Console.WriteLine("error"); }
                 }
 
-
-                //Console.WriteLine("reading thread entered");
                 String message = buffer[i];
                 buffer[i] = null;
-
-               // Console.WriteLine("Reading thread " + Thread.CurrentThread.Name + " " + message + " " + n);
                 Monitor.Pulse(this);
 
                 return message;
