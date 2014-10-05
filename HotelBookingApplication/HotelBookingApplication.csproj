@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BufferObject.cs" />
+    <Compile Include="ConfirmationBuffer.cs" />
     <Compile Include="Decoder.cs" />
     <Compile Include="Encoder.cs" />
     <Compile Include="HotelSupplier.cs" />
