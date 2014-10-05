@@ -14,16 +14,18 @@ namespace HotelBookingApplication
         private ConcurrentDictionary<String, PriceObject> hotelPricesMap = new ConcurrentDictionary<String, PriceObject>();
         private ConcurrentDictionary<String, byte> hotelsWithRoomsOnSale = new ConcurrentDictionary<String, byte>();
         private MultiCellBuffer mCellBuffer;
+        private ConfirmationBuffer cBuffer;
         private Random rand = new Random();
 
-        public TravelAgency(MultiCellBuffer mCellBuffer)
+        public TravelAgency(MultiCellBuffer mCellBuffer, ConfirmationBuffer cBuffer)
         {
-            this.mCellBuffer = mCellBuffer;          
+            this.mCellBuffer = mCellBuffer;
+            this.cBuffer = cBuffer;
         }
 
         public void AgencyFunc()
         {
-            for (Int32 i = 0; i < 50; i++)
+            for (Int32 i = 0; i < 100; i++)
             {
                 Thread.Sleep(500);
                 if (hotelsWithRoomsOnSale.Count != 0)
@@ -38,6 +40,14 @@ namespace HotelBookingApplication
                             bookHotel(hotelName, Thread.CurrentThread.Name, currentPrice);
                         }
                     }
+                }
+                
+                String agent = Thread.CurrentThread.Name;
+                int n = (int)Char.GetNumericValue(agent[agent.Length - 1]);
+                if (cBuffer.buffer[n - 1] != null)
+                {
+                    String message = cBuffer.Get(n - 1);
+                    Console.WriteLine(message);
                 }
             }
         }

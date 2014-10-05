@@ -17,13 +17,15 @@ namespace HotelBookingApplication
         private Int32 roomPrice;
         private Int32 p;                                        //priceCut counter; if p=10, thread terminates                             
         private MultiCellBuffer mCellBuffer;
+        private ConfirmationBuffer cBuffer;
         public Int32 locationCharge;
 
-        public HotelSupplier(MultiCellBuffer mCellBuffer)
+        public HotelSupplier(MultiCellBuffer mCellBuffer, ConfirmationBuffer cBuffer)
         {
             roomPrice = 10;
             p = 0;
             this.mCellBuffer = mCellBuffer;
+            this.cBuffer = cBuffer;
             this.locationCharge = rng.Next(5, 10);
         }
 
@@ -50,7 +52,7 @@ namespace HotelBookingApplication
 
         public void HotelFunc()                             //Thread Start function.
         {                                                   //Changes the price of the room for this hotel                    
-            for (Int32 i = 0; i < 50; i++)
+            for (Int32 i = 0; i < 100; i++)
             {
                 if (p > 10)
                 {
@@ -80,26 +82,35 @@ namespace HotelBookingApplication
 
         public void orderProcessing(OrderObject decodedOrder)
         {
+            String agent = decodedOrder.getSenderId();
+            int n = (int)Char.GetNumericValue(agent[agent.Length - 1]);
             if(decodedOrder.getCardNo() < 2000 && decodedOrder.getCardNo() > 3000)
             {
                 String failedBooking = "Booking failed!! Details: Processed for "+ decodedOrder.getNumberRooms()
                 +" rooms at $"+decodedOrder.getPrice()
                 +" per room for "+ decodedOrder.getSenderId() 
                 +" by "+ decodedOrder.getReceiverId();
-               
+
+                cBuffer.Put(failedBooking, n - 1);
+                return;               
             }            
             double tax = 0.08;
             double finalPrice = decodedOrder.getNumberRooms() * decodedOrder.getPrice();
             finalPrice += finalPrice * tax;
             finalPrice += this.locationCharge;
-            
-            String confirmedBooking = "Booking confirmed at !! Details: Processed for "+ decodedOrder.getNumberRooms()
+
+            TimeSpan timeSpan = System.DateTime.Now - decodedOrder.getBookingTimeStamp();
+                        
+            String confirmedBooking = "Booking confirmed at "+System.DateTime.Now
+                +" in "+timeSpan
+                +" seconds!! Details: Processed for "+ decodedOrder.getNumberRooms()
                 +" rooms at $"+decodedOrder.getPrice()
                 +" per room for "+ decodedOrder.getSenderId() 
                 +" by "+ decodedOrder.getReceiverId()
                 +" at total cost $"+ finalPrice
                 +" including Location Charge $" + this.locationCharge;
 
+                cBuffer.Put(confirmedBooking, n - 1);
         }
     }
 }

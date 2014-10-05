@@ -14,7 +14,8 @@ public class Program{
 
     private static Int32 NUM_HOTELS = 2;
     private static Int32 NUM_AGENTS = 5;
-    private static MultiCellBuffer mCellBuffer = new MultiCellBuffer();   
+    private static MultiCellBuffer mCellBuffer = new MultiCellBuffer();
+    private static ConfirmationBuffer cBuffer = new ConfirmationBuffer();
 
     static void Main(string[] args){
 
@@ -22,13 +23,13 @@ public class Program{
         Thread[] hotelSupplier = new Thread[NUM_HOTELS];
         for (Int32 i = 0; i < NUM_HOTELS; i++)
         {
-            suppliers[i] = new HotelSupplier(mCellBuffer);            
+            suppliers[i] = new HotelSupplier(mCellBuffer, cBuffer);            
             hotelSupplier[i] = new Thread(new ThreadStart(suppliers[i].HotelFunc));
             hotelSupplier[i].Name = "HSupplier:" + (i + 1).ToString();
             hotelSupplier[i].Start();
         }
 
-        TravelAgency agency = new TravelAgency(mCellBuffer);
+        TravelAgency agency = new TravelAgency(mCellBuffer, cBuffer);
         HotelSupplier.priceCut += new priceCutEvent(agency.HotelRoomOnSale);
         HotelSupplier.priceChange += new priceChangeEvent(agency.HotelRoomPriceChange);
 
