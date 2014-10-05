@@ -22,7 +22,7 @@ namespace HotelBookingApplication
                 {
                     try
                     {
-                        Monitor.Wait(this);
+                        Monitor.Wait(this, 2000);
                     }
                     catch { Console.WriteLine("error"); }
                 }
@@ -43,7 +43,7 @@ namespace HotelBookingApplication
                 {
                     try
                     {
-                        Monitor.Wait(this);
+                        Monitor.Wait(this, 2000);
                     }
                     catch { Console.WriteLine("error"); }
                 }
