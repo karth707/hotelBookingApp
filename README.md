@@ -2,7 +2,7 @@ hotelBookingApp
 ===============
 
 Application for class assignment purposes.
-Application that manages concurrent booking of hotels.
+Application that manages concurrent booking of hotel room by travel agents.
 
 Description:
 
